@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Calcolo Eredità Unificato Completo</title>
+  <style>
+    :root {
+      --primary-color: #4a6fa5;
+      --secondary-color: #166088;
+      --accent-color: #4fc3f7;
+      --light-bg: #f8f9fa;
+      --dark-text: #333;
+      --light-text: #fff;
+      --border-color: #ddd;
+      --hover-color: #e3f2fd;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --success-color: #4caf50;
+      --warning-color: #ff9800;
+      --error-color: #f44336;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--dark-text);
+      background-color: var(--light-bg);
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: var(--secondary-color);
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid var(--accent-color);
+      font-size: 2rem;
+    }
+    
+    h2 {
+      color: var(--primary-color);
+      margin-top: 40px;
+      margin-bottom: 20px;
+      font-size: 1.4rem;
+      padding-left: 10px;
+      border-left: 4px solid var(--accent-color);
+    }
+    
+    h3 {
+      color: var(--secondary-color);
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+    
+    .section {
+      background: white;
+      padding: 25px;
+      margin-bottom: 30px;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+    
+    .tables-container {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .table-wrapper {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+      margin-bottom: 15px;
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.9rem;
+    }
+    
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px 12px;
+      transition: background-color 0.2s;
+    }
+    
+    th {
+      background: var(--primary-color);
+      color: var(--light-text);
+      font-weight: 600;
+      text-align: left;
+    }
+    
+    tr:nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    tr:hover {
+      background-color: var(--hover-color);
+    }
+    
+    input {
+      width: 70px;
+      text-align: right;
+      padding: 6px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+    }
+    
+    .mappali-input {
+      width: 100%;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    .number {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .left {
+      text-align: left;
+    }
+    
+    .center {
+      text-align: center;
+    }
+    
+    .totals-input {
+      background-color: #fffde7;
+      font-weight: bold;
+      padding: 10px 15px;
+      border-radius: 4px;
+      border: 1px solid #ffe082;
+      width: 180px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .total-mass-input {
+      background-color: #e8f5e9;
+      font-weight: bold;
+      padding: 10px 15px;
+      border-radius: 4px;
+      border: 1px solid #a5d6a7;
+      width: 200px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    
+    label {
+      margin-right: 20px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    tfoot th {
+      background-color: var(--secondary-color);
+    }
+    
+    .controls {
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+    }
+    
+    .inheritance-table {
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    .quota-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    
+    .quota-fraction {
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    
+    .quota-value {
+      color: var(--secondary-color);
+      font-size: 0.85em;
+    }
+    
+    .total-row {
+      font-weight: bold;
+      background-color: rgba(22, 96, 136, 0.1);
+    }
+    
+    .total-row td {
+      border-top: 2px solid var(--secondary-color);
+    }
+    
+    .conguagli-table {
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    .conguagli-table thead th {
+      background-color: var(--secondary-color);
+    }
+    
+    .positive {
+      color: var(--success-color);
+      font-weight: bold;
+    }
+    
+    .negative {
+      color: var(--error-color);
+      font-weight: bold;
+    }
+    
+    .zero {
+      color: var(--dark-text);
+      font-weight: bold;
+    }
+    
+    .totals {
+      font-weight: bold;
+      background-color: rgba(22, 96, 136, 0.15);
+    }
+    
+    .totals td {
+      border-top: 2px solid var(--secondary-color);
+    }
+    
+    button {
+      background-color: var(--success-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    .help-text {
+      font-size: 0.85rem;
+      color: #666;
+      font-style: italic;
+      margin-top: 10px;
+    }
+    
+    @media (max-width: 1000px) {
+      .tables-container {
+        flex-direction: column;
+      }
+      
+      body {
+        padding: 15px;
+      }
+      
+      th, td {
+        padding: 8px 10px;
+      }
+      
+      input {
+        width: 60px;
+      }
+      
+      .controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .totals-input, .total-mass-input {
+        width: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Sistema Unificato Calcolo Eredità</h1>
+
+  <div class="section">
+    <h2>1. Valutazione Terreni</h2>
+    
+    <div class="tables-container">
+      <div class="table-wrapper">
+        <h3>Terreni di Paolo Menghetti</h3>
+        <table>
+          <thead>
+            <tr>
+              <th class="left">Mappale</th>
+              <th class="left">Zona</th>
+              <th>mq</th>
+              <th>CHF/mq</th>
+              <th>Valore</th>
+            </tr>
+          </thead>
+          <tbody id="menghetti-body"></tbody>
+          <tfoot>
+            <tr>
+              <th colspan="4" class="left">Totale Menghetti</th>
+              <th id="tot-menghetti" class="number"></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      
+      <div class="table-wrapper">
+        <h3>Terreni della prima moglie Ostini</h3>
+        <table>
+          <thead>
+            <tr>
+              <th class="left">Mappale</th>
+              <th class="left">Zona</th>
+              <th>mq</th>
+              <th>CHF/mq</th>
+              <th>Valore</th>
+            </tr>
+          </thead>
+          <tbody id="ostini-body"></tbody>
+          <tfoot>
+            <tr>
+              <th colspan="4" class="left">Totale Ostini</th>
+              <th id="tot-ostini" class="number"></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>2. Calcolo Quote Ereditarie</h2>
+    <div class="controls">
+      <label>Totale Menghetti: 
+        <input type="text" id="menghetti" class="totals-input" readonly>
+      </label>
+      <label>Totale Ostini: 
+        <input type="text" id="ostini" class="totals-input" readonly>
+      </label>
+      <label>Totale Massa Ereditaria: 
+        <input type="text" id="totale-massa" class="total-mass-input" readonly>
+      </label>
+    </div>
+
+    <table class="inheritance-table">
+      <thead>
+        <tr>
+          <th class="left">Erede</th>
+          <th>Quota Menghetti</th>
+          <th>Quota Ostini</th>
+          <th>Totale</th>
+        </tr>
+      </thead>
+      <tbody id="tabella-eredi"></tbody>
+      <tfoot>
+        <tr class="total-row">
+          <th colspan="3" class="left">Totale Quote</th>
+          <th id="totale-quote" class="number"></th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>3. Simulazione Distribuzione e Conguagli</h2>
+    <div class="help-text">
+      <strong>Sintassi per i mappali:</strong> "63" (mappale intero), "½ 459" (metà mappale), "½ 1104,419,425" (metà di più mappali)
+    </div>
+    
+    <table class="conguagli-table">
+      <thead>
+        <tr>
+          <th class="left">Erede</th>
+          <th>Mappali Assegnati</th>
+          <th>Valore Assegnato (CHF)</th>
+          <th>Quota Totale (CHF)</th>
+          <th>Conguaglio (CHF)</th>
+        </tr>
+      </thead>
+      <tbody id="tabella-conguagli">
+        <tr data-erede="Claudio">
+          <td><strong>Claudio</strong></td>
+          <td><input type="text" class="mappali-input" placeholder="Es: 63"></td>
+          <td class="number" id="valore-claudio">0.00</td>
+          <td class="number" id="quota-claudio">0.00</td>
+          <td class="number" id="conguaglio-claudio">0.00</td>
+        </tr>
+        <tr data-erede="Franco">
+          <td><strong>Franco</strong></td>
+          <td><input type="text" class="mappali-input" placeholder="Es: ½ 459"></td>
+          <td class="number" id="valore-franco">0.00</td>
+          <td class="number" id="quota-franco">0.00</td>
+          <td class="number" id="conguaglio-franco">0.00</td>
+        </tr>
+        <tr data-erede="Marco">
+          <td><strong>Marco</strong></td>
+          <td><input type="text" class="mappali-input" placeholder="Es: ½ 459"></td>
+          <td class="number" id="valore-marco">0.00</td>
+          <td class="number" id="quota-marco">0.00</td>
+          <td class="number" id="conguaglio-marco">0.00</td>
+        </tr>
+        <tr data-erede="Giovanna">
+          <td><strong>Giovanna</strong></td>
+          <td><input type="text" class="mappali-input" placeholder="Es: ½ 1104,419,425,995"></td>
+          <td class="number" id="valore-giovanna">0.00</td>
+          <td class="number" id="quota-giovanna">0.00</td>
+          <td class="number" id="conguaglio-giovanna">0.00</td>
+        </tr>
+        <tr data-erede="Maria">
+          <td><strong>Maria</strong></td>
+          <td><input type="text" class="mappali-input" placeholder="Es: ½ 1104,897"></td>
+          <td class="number" id="valore-maria">0.00</td>
+          <td class="number" id="quota-maria">0.00</td>
+          <td class="number" id="conguaglio-maria">0.00</td>
+        </tr>
+        <tr data-erede="Mirko">
+          <td><strong>Mirko</strong></td>
+          <td><input type="text" class="mappali-input" placeholder="Es: 716,721"></td>
+          <td class="number" id="valore-mirko">0.00</td>
+          <td class="number" id="quota-mirko">0.00</td>
+          <td class="number" id="conguaglio-mirko">0.00</td>
+        </tr>
+      </tbody>
+      <tfoot class="totals">
+        <tr>
+          <td colspan="2"><strong>TOTALE</strong></td>
+          <td class="number" id="totale-assegnato"><strong>0.00</strong></td>
+          <td class="number" id="totale-quota-conguagli"><strong>0.00</strong></td>
+          <td class="number" id="totale-conguaglio"><strong>0.00</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+    
+    <button id="calcola-conguagli-btn">Calcola Conguagli</button>
+  </div>
+
+  <script>
+    function formatCHF(num) {
+      const parts = num.toFixed(2).split('.');
+      const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+      return `${integerPart}.${parts[1]}`;
+    }
+
+    function parseCHF(str) {
+      return parseFloat(str.replace(/'/g, ''));
+    }
+
+    // Dati dei terreni
+    const terreni = {
+      menghetti: [
+        { num: 63, zona: "Corogna", mq: 591, valmq: 1700 },
+        { num: 716, zona: "Temporive", mq: 1196, valmq: 895 },
+        { num: 995, zona: "Fondo", mq: 589, valmq: 1443 }
+      ],
+      ostini: [
+        { num: 419, zona: "Mairì", mq: 1398, valmq: 35.7 },
+        { num: 425, zona: "Mairì", mq: 3998, valmq: 5.50 },
+        { num: 459, zona: "San Cristoforo", mq: 1584, valmq: 902 },
+        { num: 721, zona: "Ponte della Ganna", mq: 1310, valmq: 778 },
+        { num: 897, zona: "Ganna", mq: 717, valmq: 893 },
+        { num: 1104, zona: "Vigne dei Valeri", mq: 654, valmq: 902 }
+      ]
+    };
+
+    // Dati degli eredi
+    const eredi = [
+      { nome: "Mirko", m: [7,15], o: [11,30] },
+      { nome: "Claudio", m: [4,45], o: [19,180] },
+      { nome: "Franco", m: [4,45], o: [19,180] },
+      { nome: "Marco", m: [4,45], o: [19,180] },
+      { nome: "Maria", m: [2,15], o: [19,120] },
+      { nome: "Giovanna", m: [2,15], o: [19,120] }
+    ];
+
+    // Variabili globali per i valori dei mappali
+    let valoriMappali = {};
+    let quoteEredi = {};
+
+    // Crea le tabelle dei terreni
+    function creaTabella(id, dati) {
+      const tbody = document.getElementById(id + "-body");
+      let tot = 0;
+      tbody.innerHTML = "";
+
+      dati.forEach((t, i) => {
+        const row = document.createElement("tr");
+        const valore = t.mq * t.valmq;
+
+        row.innerHTML = `
+          <td class="left">${t.num}</td>
+          <td class="left">${t.zona}</td>
+          <td class="number"><input type="number" value="${t.mq}" onchange="aggiornaTutto()" id="${id}-mq-${i}"></td>
+          <td class="number"><input type="number" value="${t.valmq}" onchange="aggiornaTutto()" id="${id}-valmq-${i}"></td>
+          <td class="number" id="${id}-val-${i}">${formatCHF(valore)}</td>
+        `;
+        tbody.appendChild(row);
+        tot += valore;
+        
+        // Salva il valore del mappale
+        valoriMappali[t.num] = valore;
+      });
+      
+      document.getElementById("tot-" + id).textContent = formatCHF(tot);
+      return tot;
+    }
+
+    // Calcola le quote ereditarie
+    function calcolaQuote() {
+      const mTot = parseCHF(document.getElementById("menghetti").value) || 0;
+      const oTot = parseCHF(document.getElementById("ostini").value) || 0;
+      const tbody = document.getElementById("tabella-eredi");
+      tbody.innerHTML = "";
+      
+      let totaleQuote = 0;
+      quoteEredi = {}; // Reset quote eredi
+
+      eredi.forEach(e => {
+        const mCHF = mTot * e.m[0] / e.m[1];
+        const oCHF = oTot * e.o[0] / e.o[1];
+        const totale = mCHF + oCHF;
+        totaleQuote += totale;
+        
+        // Salva la quota dell'erede
+        quoteEredi[e.nome] = totale;
+        
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="left"><strong>${e.nome}</strong></td>
+          <td class="number">
+            <div class="quota-cell">
+              <span class="quota-fraction">${e.m[0]}/${e.m[1]}</span>
+              <span class="quota-value">${formatCHF(mCHF)} CHF</span>
+            </div>
+          </td>
+          <td class="number">
+            <div class="quota-cell">
+              <span class="quota-fraction">${e.o[0]}/${e.o[1]}</span>
+              <span class="quota-value">${formatCHF(oCHF)} CHF</span>
+            </div>
+          </td>
+          <td class="number"><strong>${formatCHF(totale)}</strong></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      
+      document.getElementById("totale-quote").textContent = formatCHF(totaleQuote);
+      
+      // Aggiorna anche la tabella dei conguagli
+      aggiornaQuoteConguagli();
+    }
+
+    // Aggiorna le quote nella tabella conguagli
+    function aggiornaQuoteConguagli() {
+      Object.keys(quoteEredi).forEach(nomeErede => {
+        const quotaElement = document.getElementById(`quota-${nomeErede.toLowerCase()}`);
+        if (quotaElement) {
+          quotaElement.textContent = formatCHF(quoteEredi[nomeErede]);
+        }
+      });
+      
+      // Aggiorna il totale quote nella tabella conguagli
+      const totaleQuoteConguagli = Object.values(quoteEredi).reduce((sum, quota) => sum + quota, 0);
+      document.getElementById("totale-quota-conguagli").textContent = formatCHF(totaleQuoteConguagli);
+    }
+
+    // Calcola il valore dei mappali inseriti (per i conguagli)
+    function calcolaValoreMappali(input) {
+      if (!input || input.trim() === '') return 0;
+      
+      const mappali = input.split(',').map(item => item.trim());
+      let totale = 0;
+
+      mappali.forEach(item => {
+        try {
+          if (item.includes('/')) {
+            // Gestione frazioni (es: "½ 459", "1/3 716")
+            const parts = item.split(' ');
+            if (parts.length >= 2) {
+              const frazione = parts[0];
+              const mappaleId = parts[1];
+              
+              let numeratore, denominatore;
+              if (frazione === '½') {
+                numeratore = 1;
+                denominatore = 2;
+              } else if (frazione.includes('/')) {
+                const frazParts = frazione.split('/');
+                numeratore = parseInt(frazParts[0]);
+                denominatore = parseInt(frazParts[1]);
+              }
+              
+              if (valoriMappali[mappaleId]) {
+                const valore = (numeratore / denominatore) * valoriMappali[mappaleId];
+                totale += valore;
+              }
+            }
+          } else {
+            // Mappale intero
+            const mappaleId = item;
+            if (valoriMappali[mappaleId]) {
+              totale += valoriMappali[mappaleId];
+            }
+          }
+        } catch (e) {
+          console.error('Errore parsing mappale:', item, e);
+        }
+      });
+
+      return totale;
+    }
+
+    // Aggiorna la tabella dei conguagli
+    function aggiornaConguagli() {
+      let totaleAssegnato = 0;
+      let totaleConguaglio = 0;
+
+      document.querySelectorAll('#tabella-conguagli tbody tr').forEach(row => {
+        const erede = row.dataset.erede;
+        const input = row.querySelector('.mappali-input').value;
+        const valoreAssegnato = calcolaValoreMappali(input);
+        const quotaTotale = quoteEredi[erede] || 0;
+        const conguaglio = quotaTotale - valoreAssegnato;
+
+        // Aggiorna i valori nella tabella
+        row.querySelector(`#valore-${erede.toLowerCase()}`).textContent = formatCHF(valoreAssegnato);
+        row.querySelector(`#conguaglio-${erede.toLowerCase()}`).textContent = formatCHF(conguaglio);
+        
+        // Colora il conguaglio
+        const conguaglioElement = row.querySelector(`#conguaglio-${erede.toLowerCase()}`);
+        conguaglioElement.className = 'number';
+        if (Math.abs(conguaglio) < 0.01) {
+          conguaglioElement.classList.add('zero');
+        } else if (conguaglio > 0) {
+          conguaglioElement.classList.add('positive');
+        } else {
+          conguaglioElement.classList.add('negative');
+        }
+
+        totaleAssegnato += valoreAssegnato;
+        totaleConguaglio += conguaglio;
+      });
+
+      // Aggiorna i totali
+      document.getElementById('totale-assegnato').textContent = formatCHF(totaleAssegnato);
+      document.getElementById('totale-conguaglio').textContent = formatCHF(totaleConguaglio);
+      
+      // Colora il totale conguaglio
+      const totaleConguaglioElement = document.getElementById('totale-conguaglio');
+      totaleConguaglioElement.className = 'number';
+      if (Math.abs(totaleConguaglio) < 0.01) {
+        totaleConguaglioElement.classList.add('zero');
+      } else if (totaleConguaglio > 0) {
+        totaleConguaglioElement.classList.add('positive');
+      } else {
+        totaleConguaglioElement.classList.add('negative');
+      }
+    }
+
+    // Aggiorna tutto
+    function aggiornaTutto() {
+      // Calcola i totali dei terreni e aggiorna valoriMappali
+      let totMenghetti = 0;
+      let totOstini = 0;
+      
+      ["menghetti", "ostini"].forEach(id => {
+        let tot = 0;
+        terreni[id].forEach((t, i) => {
+          const mq = parseFloat(document.getElementById(`${id}-mq-${i}`).value || 0);
+          const valmq = parseFloat(document.getElementById(`${id}-valmq-${i}`).value || 0);
+          const val = mq * valmq;
+          document.getElementById(`${id}-val-${i}`).textContent = formatCHF(val);
+          tot += val;
+          
+          // Aggiorna il valore del mappale
+          valoriMappali[t.num] = val;
+        });
+        
+        document.getElementById("tot-" + id).textContent = formatCHF(tot);
+        
+        if (id === "menghetti") totMenghetti = tot;
+        else totOstini = tot;
+      });
+      
+      const totaleMassa = totMenghetti + totOstini;
+      
+      // Aggiorna i campi di input con i totali
+      document.getElementById("menghetti").value = formatCHF(totMenghetti);
+      document.getElementById("ostini").value = formatCHF(totOstini);
+      document.getElementById("totale-massa").value = formatCHF(totaleMassa);
+      
+      // Ricalcola le quote ereditarie
+      calcolaQuote();
+      
+      // Aggiorna i conguagli
+      aggiornaConguagli();
+    }
+
+    // Inizializzazione
+    function init() {
+      const totMenghetti = creaTabella("menghetti", terreni.menghetti);
+      const totOstini = creaTabella("ostini", terreni.ostini);
+      const totaleMassa = totMenghetti + totOstini;
+      
+      document.getElementById("menghetti").value = formatCHF(totMenghetti);
+      document.getElementById("ostini").value = formatCHF(totOstini);
+      document.getElementById("totale-massa").value = formatCHF(totaleMassa);
+      
+      calcolaQuote();
+      aggiornaConguagli();
+    }
+
+    // Event Listeners
+    document.getElementById('calcola-conguagli-btn').addEventListener('click', aggiornaConguagli);
+    
+    // Calcola automaticamente quando si preme Enter nei campi mappali
+    document.querySelectorAll('.mappali-input').forEach(input => {
+      input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') aggiornaConguagli();
+      });
+      
+      // Aggiorna anche quando si esce dal campo
+      input.addEventListener('blur', aggiornaConguagli);
+    });
+
+    // Avvia l'applicazione
+    window.onload = init;
+  </script>
+</body>
+</html>
